@@ -18,9 +18,24 @@ app.config([
               url: '/home',
               templateUrl: '/home.html',
               controller: 'MainCtrl',
+              resolve: {
+			    postPromise: ['trips', function(trips){
+			      return trips.getAll();
+			    }]
+	  		  }
               
             })
-
+            
+            .state('trips', {
+			  url: '/trips/{id}',
+			  templateUrl: '/trips.html',
+			  controller: 'tripsCtrl',
+			  resolve: {
+			    post: ['$stateParams', 'trips', function($stateParams, trips) {
+			      return trips.get($stateParams.id);
+			    }]
+			  }
+			})
 
             .state('login', {
                 url: '/login',
@@ -119,5 +134,54 @@ app.controller('AuthCtrl', ['$scope','$state', 'auth',function($scope, $state, a
 
 app.controller('MainCtrl', [
 '$scope',
-function($scope){
+'trips',
+function($scope, trips){
+	$scope.trips = trips.trips;
+	
+	$scope.addTrip = function(){
+	  if(!$scope.trip.name || $scope.trip.name === '') { return; }
+	  trips.create({
+	    name: $scope.trip.name,
+	  }).success(function(trip) {
+      $scope.trips.push(trip);
+    });
+	  $scope.trip.name = '';
+	};
+	
+	$scope.deleteTrip = function(){
+		console.log("borra");
+	};
+	
+}]);
+
+app.controller('TripsCtrl', [
+'$scope',
+'$stateParams',
+'trips',
+'trip',
+function($scope, $stateParams, trips, trip){
+	console.log("funcionoo");
+	$scope.trip = trip;
+	console.log($scope.trip);
+    
+}]);
+
+app.factory('trips', ['$http', function($http){
+  var o = {
+    trips: []
+  };
+  
+  o.create = function(trip) {
+	return $http.post('/trips', trip).success(function(data){
+	  o.trips.push(data);
+	});
+  };
+  
+  o.getAll = function() {
+    return $http.get('/trips').success(function(data){
+      angular.copy(data, o.trips);
+    });
+  };
+
+  return o;
 }]);

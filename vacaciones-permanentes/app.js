@@ -8,12 +8,12 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var app = express();
 require('./models/Users');
+require('./models/Trip');
+require('./models/Destination');
 require('./config/passport');
 mongoose.connect('mongodb://localhost/news');
 var routes = require('./routes/index');
 var users = require('./routes/users');
-
-
 
 app.use(passport.initialize());
 // view engine setup

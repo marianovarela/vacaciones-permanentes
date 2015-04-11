@@ -11,14 +11,22 @@
     <style> .glyphicon-thumbs-up { cursor:pointer } </style>
 </head>
 <body ng-app="vacacionesPermanentes">
-<nav class="navbar navbar-default pull-right" ng-controller="NavCtrl">
-    <ul class="nav navbar-nav">
-        <li ng-show="isLoggedIn()"><a>{{ currentUser() }}</a></li>
-        <li ng-show="isLoggedIn()"><a href="" ng-click="logOut()">Log Out</a></li>
-        <li ng-hide="isLoggedIn()"><a href="/#/login">Log In</a></li>
-        <li ng-hide="isLoggedIn()"><a href="/#/register">Register</a></li>
-    </ul>
-</nav>
+
+<div class="page-header">
+	<div>
+        <h1>Permanent Vacations</h1>
+    </div>
+
+	<nav class="navbar navbar-default pull-right" ng-controller="NavCtrl">
+	    <ul class="nav navbar-nav">
+	        <li ng-show="isLoggedIn()"><a>{{ currentUser() }}</a></li>
+	        <li ng-show="isLoggedIn()"><a href="" ng-click="logOut()">Log Out</a></li>
+	        <li ng-hide="isLoggedIn()"><a href="/#/login">Log In</a></li>
+	        <li ng-hide="isLoggedIn()"><a href="/#/register">Register</a></li>
+	    </ul>
+	</nav>
+</div>
+
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
         <ui-view></ui-view>
@@ -26,14 +34,39 @@
 </div>
 
 <script type="text/ng-template" id="/home.html">
-    <h1>Hola soy la home</h1>
+    <div ng-show="trips.length > 0">
+	    <div>
+	    	<h2>My trips</h2>
+	    </div>
+	    <div ng-repeat="trip in trips">
+	      <span>
+            <a href="#/trips/{{trip._id}}">{{trip.name}}</a>
+	      </span>
+	      <button ng-click="deleteTrip()">
+	      	<span class="glyphicon glyphicon-remove-circle"</span>
+	      </button>	
+	    </div>
+    </div>
+    
+    <form ng-submit="addTrip()"
+          style="margin-top:30px;">
+        <h3>Add trip</h3>
+
+        <div class="form-group">
+            <input type="text"
+                   class="form-control"
+                   placeholder="name"
+                   ng-model="trip.name"></input>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</script>
+
+<script type="text/ng-template" id="/trips.html">
+ 	trip view
 </script>
 
 <script type="text/ng-template" id="/register.html">
-    <div class="page-header">
-        <h1>Permanent Vacations</h1>
-    </div>
-
     <div ng-show="error" class="alert alert-danger row">
         <span>{{ error.message }}</span>
     </div>

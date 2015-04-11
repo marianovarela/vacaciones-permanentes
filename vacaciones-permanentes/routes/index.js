@@ -15,6 +15,45 @@ module.exports = router;
 //MONGODB Initialization
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
+var Trip = mongoose.model('Trip');
+
+router.get('/trips', function(req, res, next) {
+  Trip.find(function(err, trips){
+    if(err){ return next(err); }
+
+    res.json(trips);
+  });
+});
+
+router.post('/trips', function(req, res, next) {
+  var trip = new Trip(req.body);
+
+  trip.save(function(err, post){
+    if(err){ return next(err); }
+
+    res.json(trip);
+  });
+});
+
+router.param('trip', function(req, res, next, id) {
+  var query = Trip.findById(id);
+
+  query.exec(function (err, trip){
+    if (err) { return next(err); }
+    if (!trip) { return next(new Error('can\'t find trip')); }
+
+    req.trip = trip;
+    return next();
+  });
+});
+
+router.get('/trips/:trip', function(req, res, next) {
+  req.trip.populate('destinations', function(err, trip) {
+    if (err) { return next(err); }
+
+    res.json(trip);
+  });
+});
 
 router.post('/register', function(req, res, next){
   if(!req.body.username || !req.body.password){
@@ -48,4 +87,5 @@ router.post('/login', function(req, res, next){
     }
   })(req, res, next);
 });
-module.exports = router;
+// module.exports = router;
+
