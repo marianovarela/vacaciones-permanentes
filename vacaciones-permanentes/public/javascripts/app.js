@@ -14,7 +14,15 @@ app.config([
     '$urlRouterProvider',
     function($stateProvider, $urlRouterProvider) {
 
-        $stateProvider.state('login', {
+        $stateProvider.state('home', {
+              url: '/home',
+              templateUrl: '/home.html',
+              controller: 'MainCtrl',
+              
+            })
+
+
+            .state('login', {
                 url: '/login',
                 templateUrl: '/login.html',
                 controller: 'AuthCtrl',
@@ -108,3 +116,8 @@ app.controller('AuthCtrl', ['$scope','$state', 'auth',function($scope, $state, a
             });
         };
     }]);
+
+app.controller('MainCtrl', [
+'$scope',
+function($scope){
+}]);

@@ -3,6 +3,15 @@ var passport = require('passport');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 var router = express.Router();
+
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Express' });
+});
+
+module.exports = router;
+
+
 //MONGODB Initialization
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
