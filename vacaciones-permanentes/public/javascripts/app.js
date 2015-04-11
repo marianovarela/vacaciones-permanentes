@@ -142,6 +142,8 @@ function($scope, trips){
 	  if(!$scope.trip.name || $scope.trip.name === '') { return; }
 	  trips.create({
 	    name: $scope.trip.name,
+	    start: $scope.trip.start,
+	    end: $scope.trip.end,
 	  }).success(function(trip) {
       $scope.trips.push(trip);
     });

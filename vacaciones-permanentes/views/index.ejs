@@ -39,6 +39,7 @@
 	    	<h2>My trips</h2>
 	    </div>
 	    <div ng-repeat="trip in trips">
+	    	{{trip.start}} - {{trip.end}}
 	      <span>
             <a href="#/trips/{{trip._id}}">{{trip.name}}</a>
 	      </span>
@@ -51,13 +52,24 @@
     <form ng-submit="addTrip()"
           style="margin-top:30px;">
         <h3>Add trip</h3>
-
+		Name
         <div class="form-group">
             <input type="text"
                    class="form-control"
                    placeholder="name"
-                   ng-model="trip.name"></input>
+                   ng-model="trip.name" required></input>
         </div>
+        Start
+        <div class="form-group">
+            <input type="date" class="form-control" ng-model="trip.start"
+       			placeholder="Start yyyy-MM-dd" required />
+        </div>
+        End
+        <div class="form-group">
+            <input type="date" class="form-control" ng-model="trip.end"
+       			placeholder="yyyy-MM-dd" required />
+        </div>
+        
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
 </script>
