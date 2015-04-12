@@ -54,6 +54,14 @@ router.get('/trips/:trip', function(req, res, next) {
   });
 });
 
+router.delete('/trips/:id', function(req, res){
+    // Trip.findById( req.params.id, function ( err, trip ){
+        // trip.remove( function ( err, trip ){
+        // });
+    // });
+    res.send('/ DELETE OK');
+});
+
 router.post('/register', function(req, res, next){
   if(!req.body.username || !req.body.password){
     return res.status(400).json({message: 'Please fill out all fields'});

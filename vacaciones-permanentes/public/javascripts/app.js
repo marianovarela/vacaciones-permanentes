@@ -137,6 +137,7 @@ app.controller('MainCtrl', [
 'trips',
 function($scope, trips){
 	$scope.trips = trips.trips;
+	console.log($scope.trips.length);
 	
 	$scope.addTrip = function(){
 	  if(!$scope.trip.name || $scope.trip.name === '') { return; }
@@ -150,9 +151,12 @@ function($scope, trips){
 	  $scope.trip.name = '';
 	};
 	
-	$scope.deleteTrip = function(){
-		console.log("borra");
+	$scope.deleteTrip = function(id){
+		trips.delete(id).success(function() {
+      // borrar trip de la lista de trips
+    });
 	};
+		
 	
 }]);
 
@@ -181,11 +185,17 @@ app.factory('trips', ['$http', function($http){
     });
   };
   
+  o.delete = function(id) {
+	return $http.delete('/trips/' + id).then(function(res){
+	  return res.data;
+	});
+  };	
+  
   o.get = function(id) {
   return $http.get('/trips/' + id).then(function(res){
     return res.data;
   });
 };
-
+  
   return o;
 }]);
