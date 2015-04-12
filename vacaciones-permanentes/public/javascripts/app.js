@@ -29,9 +29,9 @@ app.config([
             .state('trips', {
 			  url: '/trips/{id}',
 			  templateUrl: '/trips.html',
-			  controller: 'tripsCtrl',
+			  controller: 'TripsCtrl',
 			  resolve: {
-			    post: ['$stateParams', 'trips', function($stateParams, trips) {
+			    trip: ['$stateParams', 'trips', function($stateParams, trips) {
 			      return trips.get($stateParams.id);
 			    }]
 			  }
@@ -158,14 +158,10 @@ function($scope, trips){
 
 app.controller('TripsCtrl', [
 '$scope',
-'$stateParams',
 'trips',
 'trip',
-function($scope, $stateParams, trips, trip){
-	console.log("funcionoo");
+function($scope, trips, trip){
 	$scope.trip = trip;
-	console.log($scope.trip);
-    
 }]);
 
 app.factory('trips', ['$http', function($http){
@@ -184,6 +180,12 @@ app.factory('trips', ['$http', function($http){
       angular.copy(data, o.trips);
     });
   };
+  
+  o.get = function(id) {
+  return $http.get('/trips/' + id).then(function(res){
+    return res.data;
+  });
+};
 
   return o;
 }]);

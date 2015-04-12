@@ -10,7 +10,7 @@
     <script src="/javascripts/angular-moment.min.js"></script>
     <style> .glyphicon-thumbs-up { cursor:pointer } </style>
 </head>
-<body ng-app="vacacionesPermanentes">
+<body ng-app="vacacionesPermanentes" ng-controller="MainCtrl">
 
 <div class="page-header">
 	<div>
@@ -38,15 +38,32 @@
 	    <div>
 	    	<h2>My trips</h2>
 	    </div>
-	    <div ng-repeat="trip in trips">
-	    	{{trip.start}} - {{trip.end}}
-	      <span>
-            <a href="#/trips/{{trip._id}}">{{trip.name}}</a>
-	      </span>
-	      <button ng-click="deleteTrip()">
-	      	<span class="glyphicon glyphicon-remove-circle"</span>
-	      </button>	
-	    </div>
+	    <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Start</th>
+            <th>End</th>
+            <th> </th>
+          </tr>
+        </thead>
+        <tbody ng-repeat="trip in trips">
+          <tr>
+            <td>
+            	<span>
+            		<a href="#/trips/{{trip._id}}">{{trip.name}}</a>
+        		</span>
+        	</td>
+          	<td>{{trip.start}}</td>
+            <td>{{trip.end}}</td>
+            <td>
+            	<button ng-click="deleteTrip()">
+	      			<span class="glyphicon glyphicon-remove-circle"</span>
+	      		</button>
+          	</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     
     <form ng-submit="addTrip()"
@@ -75,7 +92,29 @@
 </script>
 
 <script type="text/ng-template" id="/trips.html">
- 	trip view
+ 	<a class="btn btn-danger" href="#/home">
+	  <span class="glyphicon glyphicon-home"></span>
+	</a> 
+ 	
+ 	<table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>{{trip.name}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="success">
+        <td>Start</td>
+        <td>{{trip.start}}</td>
+      </tr>
+      <tr class="danger">
+        <td>End</td>
+        <td>{{trip.end}}</td>
+      </tr>
+    </tbody>
+  </table>
+  
 </script>
 
 <script type="text/ng-template" id="/register.html">

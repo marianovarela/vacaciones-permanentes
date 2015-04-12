@@ -50,7 +50,6 @@ router.param('trip', function(req, res, next, id) {
 router.get('/trips/:trip', function(req, res, next) {
   req.trip.populate('destinations', function(err, trip) {
     if (err) { return next(err); }
-
     res.json(trip);
   });
 });
