@@ -137,7 +137,6 @@ app.controller('MainCtrl', [
 'trips',
 function($scope, trips){
 	$scope.trips = trips.trips;
-	console.log($scope.trips.length);
 	
 	$scope.addTrip = function(){
 	  if(!$scope.trip.name || $scope.trip.name === '') { return; }

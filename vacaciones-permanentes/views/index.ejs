@@ -54,8 +54,8 @@
             		<a href="#/trips/{{trip._id}}">{{trip.name}}</a>
         		</span>
         	</td>
-          	<td>{{trip.start}}</td>
-            <td>{{trip.end}}</td>
+          	<td>{{trip.start | date:'yyyy-MM-dd'}}</td>
+            <td>{{trip.end | date:'yyyy-MM-dd'}}</td>
             <td>
             	<button ng-click="deleteTrip(trip._id)">
 	      			<span class="glyphicon glyphicon-remove-circle"</span>
@@ -106,11 +106,11 @@
     <tbody>
       <tr class="success">
         <td>Start</td>
-        <td>{{trip.start}}</td>
+        <td>{{trip.start | date:'yyyy-MM-dd'}}</td>
       </tr>
       <tr class="danger">
         <td>End</td>
-        <td>{{trip.end}}</td>
+        <td>{{trip.end | date:'yyyy-MM-dd'}}</td>
       </tr>
     </tbody>
   </table>
