@@ -144,6 +144,7 @@ function($scope, trips){
 	    name: $scope.trip.name,
 	    start: $scope.trip.start,
 	    end: $scope.trip.end,
+
 	  }).success(function(trip) {
       $scope.trips.push(trip);
     });
@@ -152,8 +153,7 @@ function($scope, trips){
 	
 	$scope.deleteTrip = function(id){
 		trips.delete(id).success(function() {
-      // borrar trip de la lista de trips
-    });
+            });
 	};
 		
 	
@@ -162,30 +162,29 @@ function($scope, trips){
 app.controller('TripsCtrl', [
 '$scope',
 'trips',
-'trip',
-function($scope, trips, trip){
-	$scope.trip = trip;
+function($scope, trips){
+    $scope.trips = trips.trips;
 }]);
 
-app.factory('trips', ['$http', function($http){
+app.factory('trips', ['$http', 'auth', function($http, auth){
   var o = {
     trips: []
   };
   
   o.create = function(trip) {
-	return $http.post('/trips', trip).success(function(data){
+	return $http.post('/trips', trip, {headers: {Authorization: 'Bearer '+auth.getToken()}}).success(function(data){
 	  o.trips.push(data);
 	});
   };
   
   o.getAll = function() {
-    return $http.get('/trips').success(function(data){
+    return $http.get('/trips', {headers: {Authorization: 'Bearer '+auth.getToken()}}).success(function(data){
       angular.copy(data, o.trips);
     });
   };
   
   o.delete = function(id) {
-	return $http.delete('/trips/' + id).then(function(res){
+	return $http.post('/trips/delete/' + id, {headers: {Authorization: 'Bearer '+auth.getToken()}}).then(function(res){
 	  return res.data;
 	});
   };	

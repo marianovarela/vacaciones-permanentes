@@ -17,17 +17,17 @@ var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var Trip = mongoose.model('Trip');
 
-router.get('/trips', function(req, res, next) {
-  Trip.find(function(err, trips){
+router.get('/trips', auth, function(req, res, next) {
+  Trip.find({user: req.payload}).exec(function(err, trips){
     if(err){ return next(err); }
-
     res.json(trips);
   });
 });
 
-router.post('/trips', function(req, res, next) {
+router.post('/trips', auth, function(req, res, next) {
   var trip = new Trip(req.body);
-
+  //Le pongo el user
+  trip.user = req.payload;
   trip.save(function(err, post){
     if(err){ return next(err); }
 
@@ -54,11 +54,11 @@ router.get('/trips/:trip', function(req, res, next) {
   });
 });
 
-router.delete('/trips/:id', function(req, res){
-    // Trip.findById( req.params.id, function ( err, trip ){
-        // trip.remove( function ( err, trip ){
-        // });
-    // });
+router.post('/trips/delete/:id', function(req, res){
+     Trip.findById( req.params.id, function ( err, trip ){
+         trip.remove( function ( err, trip ){
+         });
+     });
     res.send('/ DELETE OK');
 });
 
