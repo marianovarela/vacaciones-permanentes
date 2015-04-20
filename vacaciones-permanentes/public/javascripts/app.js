@@ -223,7 +223,7 @@ app.controller('ModalInstanceCtrl', function ($scope, $modalInstance, trips, tri
   $scope.trip = trip;
 
   $scope.ok = function () {
-    trips.delete(id).success(function() {
+    trips.delete($scope.trip).success(function() {
         $modalInstance.close();
     });
   };
