@@ -7,6 +7,7 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.js"></script>
     <script src="/javascripts/app.js"></script>
     <script src="/javascripts/moment.js"></script>
+    <script src="/javascripts/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
     <script src="/javascripts/angular-moment.min.js"></script>
     <style> .glyphicon-thumbs-up { cursor:pointer } </style>
 </head>
@@ -47,7 +48,7 @@
             <th> </th>
           </tr>
         </thead>
-        <tbody ng-repeat="trip in trips">
+        <tbody ng-repeat="trip in trips track by $index">
           <tr>
             <td>
             	<span>
@@ -168,6 +169,17 @@
         </div>
         <button type="submit" class="btn btn-primary">Log In</button>
     </form>
+</script>
+
+<script type="text/ng-template" id="myModalContent.html">
+    <div class="modal-header">
+            <h3 class="modal-title">Delete the trip?</h3>
+        </div>
+       
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">Yes</button>
+            <button class="btn btn-warning" ng-click="cancel()">No</button>
+        </div>
 </script>
 </body>
 </html>

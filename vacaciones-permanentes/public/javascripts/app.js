@@ -1,7 +1,7 @@
 /**
  * Created by Martin Alejandro Melo on 22/03/2015.
  */
-var app = angular.module('vacacionesPermanentes', ['ui.router','angularMoment']);
+var app = angular.module('vacacionesPermanentes', ['ui.router','angularMoment', 'ui.bootstrap']);
 app.run(function(amMoment) {
     amMoment.changeLocale('es');
 });
@@ -135,7 +135,8 @@ app.controller('AuthCtrl', ['$scope','$state', 'auth',function($scope, $state, a
 app.controller('MainCtrl', [
 '$scope',
 'trips',
-function($scope, trips){
+'$modal',
+function($scope, trips, $modal){
 	$scope.trips = trips.trips;
 	
 	$scope.addTrip = function(){
@@ -146,15 +147,32 @@ function($scope, trips){
 	    end: $scope.trip.end,
 
 	  }).success(function(trip) {
-      $scope.trips.push(trip);
+      // $scope.trips.push(trip);
     });
 	  $scope.trip.name = '';
 	};
 	
 	$scope.deleteTrip = function(id){
-		trips.delete(id).success(function() {
-            });
+        $scope.open(id);
 	};
+
+    $scope.open = function (id) {
+
+      var modalInstance = $modal.open({
+        templateUrl: 'myModalContent.html',
+        controller: 'ModalInstanceCtrl',
+        resolve: {
+          trip: function () {
+            return id;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (selectedItem) {
+        $scope.selected = selectedItem;
+      }, function () {
+      });
+    };  
 		
 	
 }]);
@@ -162,7 +180,9 @@ function($scope, trips){
 app.controller('TripsCtrl', [
 '$scope',
 'trips',
-function($scope, trips){
+'trip',
+function($scope, trips, trip){
+    $scope.trip = trip;
     $scope.trips = trips.trips;
 }]);
 
@@ -197,3 +217,18 @@ app.factory('trips', ['$http', 'auth', function($http, auth){
   
   return o;
 }]);
+
+app.controller('ModalInstanceCtrl', function ($scope, $modalInstance, trips, trip) {
+
+  $scope.trip = trip;
+
+  $scope.ok = function () {
+    trips.delete(id).success(function() {
+        $modalInstance.close();
+    });
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+});
