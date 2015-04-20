@@ -205,6 +205,15 @@ app.factory('trips', ['$http', 'auth', function($http, auth){
   
   o.delete = function(id) {
 	return $http.post('/trips/delete/' + id, {headers: {Authorization: 'Bearer '+auth.getToken()}}).then(function(res){
+    var index, trip, _i, _len;
+    // Borro el trip de la lista de trips
+    for (_i = 0, _len = o.trips.length; _i < _len; _i++) {
+    trip = o.trips[_i];
+    if (trip._id === id) {
+       index = o.trips.indexOf(trip);
+       o.trips.splice(index, 1);
+      }
+    };
 	  return res.data;
 	});
   };	
@@ -223,9 +232,8 @@ app.controller('ModalInstanceCtrl', function ($scope, $modalInstance, trips, tri
   $scope.trip = trip;
 
   $scope.ok = function () {
-    trips.delete($scope.trip).success(function() {
-        $modalInstance.close();
-    });
+    $modalInstance.close(); 
+    trips.delete($scope.trip);
   };
 
   $scope.cancel = function () {
