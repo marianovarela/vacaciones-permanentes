@@ -115,6 +115,51 @@
       </tr>
     </tbody>
   </table>
+  <table class="table" ng-if="trip.destinations.length > 0">
+  <thead>
+  <th>Cities</th>
+  <th>Arrival</th>
+  <th>Departure</th>
+  <th></th>
+  </thead>
+  <tbody>
+        <tr ng-repeat="city in trip.destinations">
+        <td>{{city.name}}</td>
+        <td>{{city.arrival | date:'yyyy-MM-dd'}}</td>
+        <td>{{city.departure | date:'yyyy-MM-dd'}}</td>
+        <td>
+        <button ng-click="deleteDestination(city)">
+              <span class="glyphicon glyphicon-remove-circle"</span>
+            </button>
+        </td>
+      </tr>
+  </tbody>
+  </table>
+
+  <h3 ng-if='trip.destinations.length == 0'> No destinations selected </h3>
+
+  <h1> Add new city to trip </h1>
+    <form ng-submit="addDestination()"
+    style="margin-top:30px;">
+    <div class="form-group">
+      <input type="text"
+      class="form-control"
+      placeholder="Destination"
+      ng-model="city.name"></input>
+      <br>
+      <div class="form-group">
+          Arrival
+            <input type="date" class="form-control" ng-model="city.arrival"
+            placeholder="Start yyyy-MM-dd" required></input>
+            <br>
+            Departure
+            <input type="date" label="Departure" class="form-control" ng-model="city.departure"
+            placeholder="Start yyyy-MM-dd" required></input>
+        </div>
+
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+  </form>
   
 </script>
 

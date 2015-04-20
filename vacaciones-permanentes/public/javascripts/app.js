@@ -184,7 +184,29 @@ app.controller('TripsCtrl', [
 function($scope, trips, trip){
     $scope.trip = trip;
     $scope.trips = trips.trips;
+
+
+$scope.addDestination = function(){
+  if($scope.name === '') { return; }
+  trips.addDestination(trip._id, {
+    name: $scope.city.name,
+    arrival: $scope.city.arrival,
+    departure: $scope.city.departure,
+  }).success(function(destination) {
+    $scope.trip.destinations.push(destination);
+  });
+  $scope.name = '';
+};
+
+$scope.deleteDestination = function(destination){
+  trips.deleteDestination(destination._id);
+  var index = trip.destinations.indexOf(destination);
+  trip.destinations.splice(index, 1);
+}
+
 }]);
+
+
 
 app.factory('trips', ['$http', 'auth', function($http, auth){
   var o = {
@@ -215,14 +237,21 @@ app.factory('trips', ['$http', 'auth', function($http, auth){
       }
     };
 	  return res.data;
-	});
-  };	
-  
+	})};
+
+  o.deleteDestination = function(id) {
+    return $http.post('/destinations/delete/' + id, {headers: {Authorization: 'Bearer '+auth.getToken()}})};
+
   o.get = function(id) {
   return $http.get('/trips/' + id).then(function(res){
     return res.data;
   });
 };
+
+  o.addDestination = function(id, destination) {
+  return $http.post('/trips/' + id + '/destination', destination);
+};
+
   
   return o;
 }]);

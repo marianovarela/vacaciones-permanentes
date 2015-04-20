@@ -16,6 +16,7 @@ module.exports = router;
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var Trip = mongoose.model('Trip');
+var Destination = mongoose.model('Destination');
 
 router.get('/trips', auth, function(req, res, next) {
   Trip.find({user: req.payload}).exec(function(err, trips){
@@ -61,6 +62,33 @@ router.post('/trips/delete/:id', function(req, res){
      });
     res.send('/ DELETE OK');
 });
+
+//DESTINATIONS
+router.post('/trips/:trip/destination', function(req, res, next){
+  var destination = new Destination(req.body);
+  destination.trip = req.trip;
+
+
+  destination.save(function(err, destination){
+    if(err){ return next(err); }
+
+    req.trip.destinations.push(destination);
+    req.trip.save(function(err, trip) {
+      if(err){ return next(err); }
+
+      res.json(destination);
+    });
+  });
+});
+
+router.post('/destinations/delete/:id', function(req, res){
+     Destination.findById( req.params.id, function ( err, destination ){
+         destination.remove( function ( err, destination ){
+         });
+     });
+    res.send('/ DELETE OK');
+});
+
 
 router.post('/register', function(req, res, next){
   if(!req.body.username || !req.body.password){
