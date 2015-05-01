@@ -1,0 +1,23 @@
+{
+  "name": "vacaciones-permanentes",
+  "version": "0.0.0",
+  "homepage": "https://github.com/nachoyegro/vacaciones-permanentes",
+  "authors": [
+    "Mariano Varela <marianogvarela@gmail.com>"
+  ],
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-bootstrap": "~0.12.1",
+    "bootstrap": "~3.3.4"
+  }
+}
