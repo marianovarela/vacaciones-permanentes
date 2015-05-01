@@ -1,7 +1,7 @@
 /**
  * Created by Martin Alejandro Melo on 22/03/2015.
  */
-var app = angular.module('vacacionesPermanentes', ['ui.router','angularMoment', 'ui.bootstrap']);
+var app = angular.module('vacacionesPermanentes', ['ui.router','angularMoment', 'ui.bootstrap', 'google.places']);
 app.run(function(amMoment) {
     amMoment.changeLocale('es');
 });
@@ -185,13 +185,16 @@ function($scope, trips, trip){
     $scope.trip = trip;
     $scope.trips = trips.trips;
 
-
 $scope.addDestination = function(){
   if($scope.name === '') { return; }
   trips.addDestination(trip._id, {
-    name: $scope.city.name,
+    name: $scope.city.name.formatted_address,
+    icon: $scope.city.name.icon,
+    locationA: $scope.city.name.geometry.location.A,
+    locationF: $scope.city.name.geometry.location.F,
     arrival: $scope.city.arrival,
     departure: $scope.city.departure,
+
   }).success(function(destination) {
     $scope.trip.destinations.push(destination);
   });
@@ -205,8 +208,6 @@ $scope.deleteDestination = function(destination){
 }
 
 }]);
-
-
 
 app.factory('trips', ['$http', 'auth', function($http, auth){
   var o = {
