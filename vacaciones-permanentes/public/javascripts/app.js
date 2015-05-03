@@ -179,9 +179,10 @@ function($scope, trips, $modal){
 
 app.controller('TripsCtrl', [
 '$scope',
+'$modal',
 'trips',
 'trip',
-function($scope, trips, trip){
+function($scope, $modal, trips, trip){
     $scope.trip = trip;
     $scope.trips = trips.trips;
 
@@ -202,10 +203,29 @@ $scope.addDestination = function(){
 };
 
 $scope.deleteDestination = function(destination){
-  trips.deleteDestination(destination._id);
-  var index = trip.destinations.indexOf(destination);
-  trip.destinations.splice(index, 1);
+  $scope.open_confirmation(destination, $scope.trip);
 }
+
+$scope.open_confirmation = function (destination, trip) {
+
+      var modalInstance = $modal.open({
+        templateUrl: 'DeleteCityModal.html',
+        controller: 'DeleteCityConfirmCtrl',
+        resolve: {
+          destination: function () {
+            return destination;
+          },
+          trip: function () {
+            return trip;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (selectedItem) {
+        $scope.selected = selectedItem;
+      }, function () {
+      });
+    };  
 
 }]);
 
@@ -264,6 +284,22 @@ app.controller('ModalInstanceCtrl', function ($scope, $modalInstance, trips, tri
   $scope.ok = function () {
     $modalInstance.close(); 
     trips.delete($scope.trip);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+});
+
+app.controller('DeleteCityConfirmCtrl', function ($scope, $modalInstance, trips, destination, trip) {
+
+  $scope.destination = destination;
+
+  $scope.ok = function () {
+    $modalInstance.close(); 
+    trips.deleteDestination(destination._id);
+    var index = trip.destinations.indexOf(destination);
+    trip.destinations.splice(index, 1);
   };
 
   $scope.cancel = function () {
