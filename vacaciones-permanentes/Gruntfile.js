@@ -3,14 +3,23 @@ module.exports = function(grunt) {
   grunt.initConfig({
 
     compile: {
-      html: ['jade', 'wiredep'],
+      ejs: ['jade', 'wiredep'],
+      styles: ['concat:styles', 'sass', 'clean:compile'],
+      js: ['concat:js']
+    },
+
+    compile: {
+      css: ['jade', 'wiredep'],
       styles: ['concat:styles', 'sass', 'clean:compile'],
       js: ['concat:js']
     },
 
     wiredep: {
       task: {
-        src: ['target/**/*.html']
+        src: ['views/*.ejs']
+      },
+      options : {
+       ignorePath : "../public" 
       }
     }
 
