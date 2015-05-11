@@ -1,7 +1,7 @@
 /**
  * Created by Martin Alejandro Melo on 22/03/2015.
  */
-var app = angular.module('vacacionesPermanentes', ['ui.router','angularMoment', 'ui.bootstrap', 'google.places']);
+var app = angular.module('vacacionesPermanentes', ['ui.router','angularMoment', 'ui.bootstrap', 'google.places', 'uiGmapgoogle-maps']);
 app.run(function(amMoment) {
     amMoment.changeLocale('es');
 });
@@ -185,6 +185,33 @@ app.controller('TripsCtrl', [
 function($scope, $modal, trips, trip){
     $scope.trip = trip;
     $scope.trips = trips.trips;
+    $scope.map = {};
+    $scope.polylines = [];
+    if(trip.destinations.length > 0){
+        $scope.map = { center: { latitude: trip.destinations[0].locationA, longitude: trip.destinations[0].locationF }, zoom: 5 };
+        $scope.polylines = [
+            {
+                path: get_paths(trip.destinations),
+                stroke: {
+                    color: '#6060FB',
+                    weight: 3
+                },
+                editable: true,
+                draggable: true,
+                geodesic: true,
+                visible: true,
+            },
+        ];
+    }
+
+
+function get_paths(destinations){
+  var paths = [];
+  for (var i = 0; i < destinations.length; i++) {
+    paths[i] = { 'latitude': destinations[i].locationA,  'longitude': destinations[i].locationF }
+}
+  return paths
+}
 
 $scope.addDestination = function(){
   if($scope.name === '') { return; }
