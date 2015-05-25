@@ -37,6 +37,17 @@ app.config([
 			  }
 			})
 
+            .state('destinations', {
+              url: '/destinations/{id}',
+              templateUrl: '/destinations.html',
+              controller: 'DestinationsCtrl',
+              resolve: {
+                destination: ['$stateParams', 'destinations', function($stateParams, destinations) {
+                  return destinations.get($stateParams.id);
+                }]
+              }
+            })
+
             .state('login', {
                 url: '/login',
                 templateUrl: '/login.html',
@@ -256,6 +267,83 @@ $scope.open_confirmation = function (destination, trip) {
 
 }]);
 
+app.controller('DestinationsCtrl', [
+'$scope',
+'$modal',
+'destinations',
+'destination',
+function($scope, $modal, destinations, destination){
+    $scope.destination = destination;
+    $scope.map = {};
+    $scope.polylines = [];
+    if(destination.pois.length > 0){
+        $scope.map = { center: { latitude: destination.pois[0].locationA, longitude: destination.pois[0].locationF }, zoom: 5 };
+        $scope.polylines = [
+            {
+                path: get_paths(destination.pois),
+                stroke: {
+                    color: '#6060FB',
+                    weight: 3
+                },
+                editable: true,
+                draggable: true,
+                geodesic: true,
+                visible: true,
+            },
+        ];
+    }
+
+    function get_paths(destinations){
+      //TODO hacer un service para no duplicar este metodo
+      var paths = [];
+      for (var i = 0; i < destinations.length; i++) {
+        paths[i] = { 'latitude': destinations[i].locationA,  'longitude': destinations[i].locationF }
+    }
+      return paths
+    };
+
+    $scope.addPOI = function () {
+      console.log($scope.poi);
+      if($scope.poi === '' || $scope.poi == undefined) { return; }
+      destinations.addPOI($scope.destination._id, {
+        name: $scope.poi.name,
+        address: $scope.poi.formatted_address,
+        icon: $scope.poi.icon,
+        locationA: $scope.poi.geometry.location.A,
+        locationF: $scope.poi.geometry.location.F,
+      }).success(function(poi) {
+        $scope.destination.pois.push(poi);
+      });
+      $scope.name = '';
+    };
+
+    $scope.deletePOI = function(poi){
+      $scope.open_confirmation(poi, $scope.destination);
+    }
+
+    $scope.open_confirmation = function (poi, destination) {
+
+          var modalInstance = $modal.open({
+            templateUrl: 'DeletePOIModal.html',
+            controller: 'DeletePOIConfirmCtrl',
+            resolve: {
+              poi: function () {
+                return poi;
+              },
+              destination: function () {
+                return destination;
+              }
+            }
+          });
+
+          modalInstance.result.then(function (selectedItem) {
+            $scope.selected = selectedItem;
+          }, function () {
+          });
+        };  
+
+}]);
+
 app.factory('trips', ['$http', 'auth', function($http, auth){
   var o = {
     trips: []
@@ -304,6 +392,33 @@ app.factory('trips', ['$http', 'auth', function($http, auth){
   return o;
 }]);
 
+app.factory('destinations', ['$http', 'auth', function($http, auth){
+  var o = {
+    destinations: []
+  };
+
+  o.getAll = function() {
+    return $http.get('/destinations', {headers: {Authorization: 'Bearer '+auth.getToken()}}).success(function(data){
+      angular.copy(data, o.destinations);
+    });
+  };
+
+  o.get = function(id) {
+  return $http.get('/destinations/' + id).then(function(res){
+    return res.data;
+  });
+};
+
+  o.addPOI = function(id, poi) {
+    return $http.post('/destinations/' + id + '/poi', poi);
+  };
+
+  o.deletePOI = function(id) {
+    return $http.post('/pois/delete/' + id, {headers: {Authorization: 'Bearer '+auth.getToken()}})};
+
+  return o;
+}]);
+
 app.controller('ModalInstanceCtrl', function ($scope, $modalInstance, trips, trip) {
 
   $scope.trip = trip;
@@ -327,6 +442,22 @@ app.controller('DeleteCityConfirmCtrl', function ($scope, $modalInstance, trips,
     trips.deleteDestination(destination._id);
     var index = trip.destinations.indexOf(destination);
     trip.destinations.splice(index, 1);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+});
+
+app.controller('DeletePOIConfirmCtrl', function ($scope, $modalInstance, destinations, poi, destination) {
+
+  $scope.poi = poi;
+
+  $scope.ok = function () {
+    $modalInstance.close(); 
+    destinations.deletePOI(poi._id);
+    var index = destination.pois.indexOf(poi);
+    destination.pois.splice(index, 1);
   };
 
   $scope.cancel = function () {
