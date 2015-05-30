@@ -1,7 +1,7 @@
 /**
  * Created by Martin Alejandro Melo on 22/03/2015.
  */
-var app = angular.module('vacacionesPermanentes', ['ui.router','angularMoment', 'ui.bootstrap', 'google.places', 'uiGmapgoogle-maps']);
+var app = angular.module('vacacionesPermanentes', ['ui.router','angularMoment', 'ui.bootstrap', 'google.places', 'uiGmapgoogle-maps', 'ngAutocomplete']);
 app.run(function(amMoment) {
     amMoment.changeLocale('es');
 });
@@ -151,6 +151,7 @@ function($scope, trips, $modal){
 	$scope.trips = trips.trips;
 	
 	$scope.addTrip = function(){
+    console.log($scope.trip);
 	  if(!$scope.trip.name || $scope.trip.name === '') { return; }
 	  trips.create({
 	    name: $scope.trip.name,
@@ -198,6 +199,10 @@ function($scope, $modal, trips, trip){
     $scope.trips = trips.trips;
     $scope.map = {};
     $scope.polylines = [];
+    $scope.options = {
+      'types': '(regions)',
+    }
+
     if(trip.destinations.length > 0){
         $scope.map = { center: { latitude: trip.destinations[0].locationA, longitude: trip.destinations[0].locationF }, zoom: 5 };
         $scope.polylines = [
@@ -225,12 +230,18 @@ function get_paths(destinations){
 }
 
 $scope.addDestination = function(){
+  console.log($scope.city);
+  console.log($scope.details);
   if($scope.name === '') { return; }
   trips.addDestination(trip._id, {
-    name: $scope.city.name.formatted_address,
-    icon: $scope.city.name.icon,
-    locationA: $scope.city.name.geometry.location.A,
-    locationF: $scope.city.name.geometry.location.F,
+    name: $scope.details.formatted_address,
+    icon: $scope.details.icon,
+    locationA: $scope.details.geometry.location.A,
+    locationF: $scope.details.geometry.location.F,
+    zaA: $scope.details.geometry.viewport.za.A,
+    zaJ: $scope.details.geometry.viewport.za.j,
+    qaA: $scope.details.geometry.viewport.qa.A,
+    qaJ: $scope.details.geometry.viewport.qa.j,
     arrival: $scope.city.arrival,
     departure: $scope.city.departure,
 
@@ -274,8 +285,24 @@ app.controller('DestinationsCtrl', [
 'destination',
 function($scope, $modal, destinations, destination){
     $scope.destination = destination;
+    console.log($scope.destination);
     $scope.map = {};
     $scope.polylines = [];
+    
+    $scope.options = {};
+    qa = {
+      'A': $scope.destination.qaA,
+      'j': $scope.destination.qaJ,
+    }
+    za = {
+      'A': $scope.destination.zaA,
+      'j': $scope.destination.zaJ,
+    }
+    bounds = {
+      'qa': qa,
+      'za': za,
+    }
+    $scope.options.bounds = bounds;
     if(destination.pois.length > 0){
         $scope.map = { center: { latitude: destination.pois[0].locationA, longitude: destination.pois[0].locationF }, zoom: 5 };
         $scope.polylines = [
@@ -303,14 +330,15 @@ function($scope, $modal, destinations, destination){
     };
 
     $scope.addPOI = function () {
-      console.log($scope.poi);
+      console.log($scope.result);
+      console.log($scope.details);
       if($scope.poi === '' || $scope.poi == undefined) { return; }
       destinations.addPOI($scope.destination._id, {
-        name: $scope.poi.name,
-        address: $scope.poi.formatted_address,
-        icon: $scope.poi.icon,
-        locationA: $scope.poi.geometry.location.A,
-        locationF: $scope.poi.geometry.location.F,
+        name: $scope.details.name,
+        address: $scope.details.formatted_address,
+        icon: $scope.details.icon,
+        locationA: $scope.details.geometry.location.A,
+        locationF: $scope.details.geometry.location.F,
       }).success(function(poi) {
         $scope.destination.pois.push(poi);
       });

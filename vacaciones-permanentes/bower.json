@@ -20,6 +20,8 @@
     "angular-bootstrap": "~0.12.1",
     "bootstrap": "~3.3.4",
     "angular-google-places-autocomplete": "~0.2.5",
-    "angular-google-maps": "~2.1.0"
+    "angular-google-maps": "~2.1.0",
+    "ng-autocomplete": "*",
+    "ngAutocomplete": "~1.0.0"
   }
 }
