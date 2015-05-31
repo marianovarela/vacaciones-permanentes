@@ -289,8 +289,8 @@ function($scope, $modal, destinations, destination){
     $scope.polylines = [];
     
     $scope.options = {};
-    var SW = new google.maps.LatLng($scope.destination.zaA, $scope.destination.qaJ)
-    var NE = new google.maps.LatLng($scope.destination.zaJ, $scope.destination.qaA)
+    var SW = new google.maps.LatLng($scope.destination.zaA, $scope.destination.qaJ);
+    var NE = new google.maps.LatLng($scope.destination.zaJ, $scope.destination.qaA);
     var bounds = new google.maps.LatLngBounds(SW, NE);
     $scope.options.bounds = bounds;
     if(destination.pois.length > 0){
@@ -320,8 +320,6 @@ function($scope, $modal, destinations, destination){
     };
 
     $scope.addPOI = function () {
-      console.log($scope.result);
-      console.log($scope.details);
       if($scope.poi === '' || $scope.poi == undefined) { return; }
       destinations.addPOI($scope.destination._id, {
         name: $scope.details.name,
