@@ -1,7 +1,7 @@
 /**
  * Created by Martin Alejandro Melo on 22/03/2015.
  */
-var app = angular.module('vacacionesPermanentes', ['ui.router','angularMoment', 'ui.bootstrap', 'google.places', 'uiGmapgoogle-maps']);
+var app = angular.module('vacacionesPermanentes', ['ui.router','angularMoment', 'ui.bootstrap', 'google.places', 'uiGmapgoogle-maps', 'ngAutocomplete']);
 app.run(function(amMoment) {
     amMoment.changeLocale('es');
 });
@@ -36,6 +36,17 @@ app.config([
 			    }]
 			  }
 			})
+
+            .state('destinations', {
+              url: '/destinations/{id}',
+              templateUrl: '/destinations.html',
+              controller: 'DestinationsCtrl',
+              resolve: {
+                destination: ['$stateParams', 'destinations', function($stateParams, destinations) {
+                  return destinations.get($stateParams.id);
+                }]
+              }
+            })
 
             .state('login', {
                 url: '/login',
@@ -140,6 +151,7 @@ function($scope, trips, $modal){
 	$scope.trips = trips.trips;
 	
 	$scope.addTrip = function(){
+    console.log($scope.trip);
 	  if(!$scope.trip.name || $scope.trip.name === '') { return; }
 	  trips.create({
 	    name: $scope.trip.name,
@@ -187,6 +199,10 @@ function($scope, $modal, trips, trip){
     $scope.trips = trips.trips;
     $scope.map = {};
     $scope.polylines = [];
+    $scope.options = {
+      'types': '(regions)',
+    }
+
     if(trip.destinations.length > 0){
         $scope.map = { center: { latitude: trip.destinations[0].locationA, longitude: trip.destinations[0].locationF }, zoom: 5 };
         $scope.polylines = [
@@ -214,12 +230,18 @@ function get_paths(destinations){
 }
 
 $scope.addDestination = function(){
+  console.log($scope.city);
+  console.log($scope.details);
   if($scope.name === '') { return; }
   trips.addDestination(trip._id, {
-    name: $scope.city.name.formatted_address,
-    icon: $scope.city.name.icon,
-    locationA: $scope.city.name.geometry.location.A,
-    locationF: $scope.city.name.geometry.location.F,
+    name: $scope.details.formatted_address,
+    icon: $scope.details.icon,
+    locationA: $scope.details.geometry.location.A,
+    locationF: $scope.details.geometry.location.F,
+    zaA: $scope.details.geometry.viewport.za.A,
+    zaJ: $scope.details.geometry.viewport.za.j,
+    qaA: $scope.details.geometry.viewport.qa.A,
+    qaJ: $scope.details.geometry.viewport.qa.j,
     arrival: $scope.city.arrival,
     departure: $scope.city.departure,
 
@@ -253,6 +275,88 @@ $scope.open_confirmation = function (destination, trip) {
       }, function () {
       });
     };  
+
+}]);
+
+app.controller('DestinationsCtrl', [
+'$scope',
+'$modal',
+'destinations',
+'destination',
+function($scope, $modal, destinations, destination){
+    $scope.destination = destination;
+    $scope.map = {};
+    $scope.polylines = [];
+    
+    $scope.options = {};
+    var SW = new google.maps.LatLng($scope.destination.zaA, $scope.destination.qaJ);
+    var NE = new google.maps.LatLng($scope.destination.zaJ, $scope.destination.qaA);
+    var bounds = new google.maps.LatLngBounds(SW, NE);
+    $scope.options.bounds = bounds;
+    if(destination.pois.length > 0){
+        $scope.map = { center: { latitude: destination.pois[0].locationA, longitude: destination.pois[0].locationF }, zoom: 5 };
+        $scope.polylines = [
+            {
+                path: get_paths(destination.pois),
+                stroke: {
+                    color: '#6060FB',
+                    weight: 3
+                },
+                editable: true,
+                draggable: true,
+                geodesic: true,
+                visible: true,
+            },
+        ];
+    }
+
+    function get_paths(destinations){
+      //TODO hacer un service para no duplicar este metodo
+      var paths = [];
+      for (var i = 0; i < destinations.length; i++) {
+        paths[i] = { 'latitude': destinations[i].locationA,  'longitude': destinations[i].locationF }
+    }
+      return paths
+    };
+
+    $scope.addPOI = function () {
+      if($scope.poi === '' || $scope.poi == undefined) { return; }
+      destinations.addPOI($scope.destination._id, {
+        name: $scope.details.name,
+        address: $scope.details.formatted_address,
+        icon: $scope.details.icon,
+        locationA: $scope.details.geometry.location.A,
+        locationF: $scope.details.geometry.location.F,
+      }).success(function(poi) {
+        $scope.destination.pois.push(poi);
+      });
+      $scope.name = '';
+    };
+
+    $scope.deletePOI = function(poi){
+      $scope.open_confirmation(poi, $scope.destination);
+    }
+
+    $scope.open_confirmation = function (poi, destination) {
+
+          var modalInstance = $modal.open({
+            templateUrl: 'DeletePOIModal.html',
+            controller: 'DeletePOIConfirmCtrl',
+            resolve: {
+              poi: function () {
+                return poi;
+              },
+              destination: function () {
+                return destination;
+              }
+            }
+          });
+
+          modalInstance.result.then(function (selectedItem) {
+            $scope.selected = selectedItem;
+          }, function () {
+          });
+        };  
 
 }]);
 
@@ -304,6 +408,33 @@ app.factory('trips', ['$http', 'auth', function($http, auth){
   return o;
 }]);
 
+app.factory('destinations', ['$http', 'auth', function($http, auth){
+  var o = {
+    destinations: []
+  };
+
+  o.getAll = function() {
+    return $http.get('/destinations', {headers: {Authorization: 'Bearer '+auth.getToken()}}).success(function(data){
+      angular.copy(data, o.destinations);
+    });
+  };
+
+  o.get = function(id) {
+  return $http.get('/destinations/' + id).then(function(res){
+    return res.data;
+  });
+};
+
+  o.addPOI = function(id, poi) {
+    return $http.post('/destinations/' + id + '/poi', poi);
+  };
+
+  o.deletePOI = function(id) {
+    return $http.post('/pois/delete/' + id, {headers: {Authorization: 'Bearer '+auth.getToken()}})};
+
+  return o;
+}]);
+
 app.controller('ModalInstanceCtrl', function ($scope, $modalInstance, trips, trip) {
 
   $scope.trip = trip;
@@ -327,6 +458,22 @@ app.controller('DeleteCityConfirmCtrl', function ($scope, $modalInstance, trips,
     trips.deleteDestination(destination._id);
     var index = trip.destinations.indexOf(destination);
     trip.destinations.splice(index, 1);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+});
+
+app.controller('DeletePOIConfirmCtrl', function ($scope, $modalInstance, destinations, poi, destination) {
+
+  $scope.poi = poi;
+
+  $scope.ok = function () {
+    $modalInstance.close(); 
+    destinations.deletePOI(poi._id);
+    var index = destination.pois.indexOf(poi);
+    destination.pois.splice(index, 1);
   };
 
   $scope.cancel = function () {

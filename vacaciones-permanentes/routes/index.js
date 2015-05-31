@@ -17,6 +17,7 @@ var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var Trip = mongoose.model('Trip');
 var Destination = mongoose.model('Destination');
+var POI = mongoose.model('POI');
 
 router.get('/trips', auth, function(req, res, next) {
   Trip.find({user: req.payload}).exec(function(err, trips){
@@ -64,6 +65,42 @@ router.post('/trips/delete/:id', function(req, res){
 });
 
 //DESTINATIONS
+router.param('destination', function(req, res, next, id) {
+  var query = Destination.findById(id);
+
+  query.exec(function (err, destination){
+    if (err) { return next(err); }
+    if (!destination) { return next(new Error('can\'t find destination')); }
+
+    req.destination = destination;
+    return next();
+  });
+});
+
+router.get('/destinations/:destination', function(req, res, next) {
+  req.destination.populate('pois', function(err, destination) {
+    if (err) { return next(err); }
+    res.json(destination);
+  });
+});
+
+router.post('/destinations/:destination/poi', function(req, res, next){
+  var poi = new POI(req.body);
+  // destination.trip = req.trip;
+
+
+  poi.save(function(err, poi){
+    if(err){ return next(err); }
+
+    req.destination.pois.push(poi);
+    req.destination.save(function(err, destination) {
+      if(err){ return next(err); }
+
+      res.json(poi);
+    });
+  });
+});
+
 router.post('/trips/:trip/destination', function(req, res, next){
   var destination = new Destination(req.body);
   destination.trip = req.trip;
@@ -84,6 +121,14 @@ router.post('/trips/:trip/destination', function(req, res, next){
 router.post('/destinations/delete/:id', function(req, res){
      Destination.findById( req.params.id, function ( err, destination ){
          destination.remove( function ( err, destination ){
+         });
+     });
+    res.send('/ DELETE OK');
+});
+
+router.post('/pois/delete/:id', function(req, res){
+     POI.findById( req.params.id, function ( err, poi ){
+         poi.remove( function ( err, poi ){
          });
      });
     res.send('/ DELETE OK');
