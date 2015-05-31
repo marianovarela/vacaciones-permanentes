@@ -285,23 +285,13 @@ app.controller('DestinationsCtrl', [
 'destination',
 function($scope, $modal, destinations, destination){
     $scope.destination = destination;
-    console.log($scope.destination);
     $scope.map = {};
     $scope.polylines = [];
     
     $scope.options = {};
-    qa = {
-      'A': $scope.destination.qaA,
-      'j': $scope.destination.qaJ,
-    }
-    za = {
-      'A': $scope.destination.zaA,
-      'j': $scope.destination.zaJ,
-    }
-    bounds = {
-      'qa': qa,
-      'za': za,
-    }
+    var SW = new google.maps.LatLng($scope.destination.zaA, $scope.destination.qaJ)
+    var NE = new google.maps.LatLng($scope.destination.zaJ, $scope.destination.qaA)
+    var bounds = new google.maps.LatLngBounds(SW, NE);
     $scope.options.bounds = bounds;
     if(destination.pois.length > 0){
         $scope.map = { center: { latitude: destination.pois[0].locationA, longitude: destination.pois[0].locationF }, zoom: 5 };
