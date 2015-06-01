@@ -200,6 +200,59 @@
     <span class="glyphicon glyphicon-home"></span>
   </a> 
 
+    <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>{{trip.name}}</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <table class="table" ng-if="destination.lodging">
+  <thead>
+  <th>POI</th>
+  <th>Address</th>
+  <th>Phone</th>
+  </thead>
+  <tbody>
+        <td>{{destination.lodging.name}}</td>
+        <td>{{destination.lodging.address}}</td>
+        <td>{{destination.lodging.phone}}</td>
+        <td>
+        <button ng-click="deleteLodging(destination.lodging)">
+              <span class="glyphicon glyphicon-remove-circle"</span>
+            </button>
+        </td>
+  </tbody>
+  </table>
+
+  <h3 ng-if='destination.lodging'> No lodging selected </h3>  
+
+  <h1> Add new lodging to {{destination.name}}</h1>
+    <form ng-submit="addLodging()"
+    style="margin-top:30px;">
+    <div class="form-group">
+      <input type="text" 
+      class="form-control" 
+      placeholder="Add Lodging" 
+      ng-model="lodging" 
+      name="" 
+      id="Autocomplete"  
+      ng-autocomplete="result" 
+      details="details" 
+      options="lodgingOptions" >
+    </div>
+    <button type="submit" class="btn btn-primary" ng-click="map.refresh()">Add</button>
+  </form> 
+  <div id="google_map">
+  <ui-gmap-google-map center='map.center' zoom='map.zoom'>
+  <ui-gmap-polyline ng-repeat="p in lodgingPolylines" path="p.path" stroke="p.stroke" visible='p.visible'
+                  geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'></ui-gmap-polyline>
+  </ui-gmap-google-map>
+  <hr>
+  <hr>
   <table class="table">
     <thead>
       <tr>
@@ -334,6 +387,17 @@
 <script type="text/ng-template" id="DeletePOIModal.html">
     <div class="modal-header">
             <h3 class="modal-title">Delete the point of interest {{poi.name}}?</h3>
+        </div>
+       
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">Yes</button>
+            <button class="btn btn-warning" ng-click="cancel()">No</button>
+        </div>
+</script>
+
+<script type="text/ng-template" id="DeleteLodgingModal.html">
+    <div class="modal-header">
+            <h3 class="modal-title">Delete the lodging of {{lodging.name}}?</h3>
         </div>
        
         <div class="modal-footer">

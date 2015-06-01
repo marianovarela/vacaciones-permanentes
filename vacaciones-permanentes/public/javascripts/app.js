@@ -19,23 +19,23 @@ app.config([
               templateUrl: '/home.html',
               controller: 'MainCtrl',
               resolve: {
-			    postPromise: ['trips', function(trips){
-			      return trips.getAll();
-			    }]
-	  		  }
+          postPromise: ['trips', function(trips){
+            return trips.getAll();
+          }]
+          }
               
             })
             
             .state('trips', {
-			  url: '/trips/{id}',
-			  templateUrl: '/trips.html',
-			  controller: 'TripsCtrl',
-			  resolve: {
-			    trip: ['$stateParams', 'trips', function($stateParams, trips) {
-			      return trips.get($stateParams.id);
-			    }]
-			  }
-			})
+        url: '/trips/{id}',
+        templateUrl: '/trips.html',
+        controller: 'TripsCtrl',
+        resolve: {
+          trip: ['$stateParams', 'trips', function($stateParams, trips) {
+            return trips.get($stateParams.id);
+          }]
+        }
+      })
 
             .state('destinations', {
               url: '/destinations/{id}',
@@ -148,25 +148,25 @@ app.controller('MainCtrl', [
 'trips',
 '$modal',
 function($scope, trips, $modal){
-	$scope.trips = trips.trips;
-	
-	$scope.addTrip = function(){
+  $scope.trips = trips.trips;
+  
+  $scope.addTrip = function(){
     console.log($scope.trip);
-	  if(!$scope.trip.name || $scope.trip.name === '') { return; }
-	  trips.create({
-	    name: $scope.trip.name,
-	    start: $scope.trip.start,
-	    end: $scope.trip.end,
+    if(!$scope.trip.name || $scope.trip.name === '') { return; }
+    trips.create({
+      name: $scope.trip.name,
+      start: $scope.trip.start,
+      end: $scope.trip.end,
 
-	  }).success(function(trip) {
+    }).success(function(trip) {
       // $scope.trips.push(trip);
     });
-	  $scope.trip.name = '';
-	};
-	
-	$scope.deleteTrip = function(id){
+    $scope.trip.name = '';
+  };
+  
+  $scope.deleteTrip = function(id){
         $scope.open(id);
-	};
+  };
 
     $scope.open = function (id) {
 
@@ -185,8 +185,8 @@ function($scope, trips, $modal){
       }, function () {
       });
     };  
-		
-	
+    
+  
 }]);
 
 app.controller('TripsCtrl', [
@@ -287,20 +287,19 @@ function($scope, $modal, destinations, destination){
     $scope.destination = destination;
     $scope.map = {};
     $scope.polylines = [];
-    
     $scope.options = {};
+    $scope.lodgingPolylines = [];
     var SW = new google.maps.LatLng($scope.destination.zaA, $scope.destination.qaJ);
     var NE = new google.maps.LatLng($scope.destination.zaJ, $scope.destination.qaA);
     var bounds = new google.maps.LatLngBounds(SW, NE);
     $scope.options.bounds = bounds;
-    initMap();
-    
-    function initMap(){
-      if($scope.destination.pois.length > 0){
-        $scope.map = { center: { latitude: $scope.destination.pois[0].locationA, longitude: $scope.destination.pois[0].locationF }, zoom: 5 };
-        $scope.polylines = [
+    $scope.lodgingOptions = {}
+
+    if(destination.lodging){
+        $scope.lodgingMap = { center: { latitude: destination.lodging.locationA, longitude: destination.lodging.locationF }, zoom: 5 };
+        $scope.lodgingPolylines = [
             {
-                path: get_paths($scope.destination.pois),
+                path: [{'latitude':destination.lodging.locationA,'longitude':destination.lodging.locationF}],
                 stroke: {
                     color: '#6060FB',
                     weight: 3
@@ -312,7 +311,22 @@ function($scope, $modal, destinations, destination){
             },
         ];
     }
-    };
+    if(destination.pois.length > 0){
+        $scope.map = { center: { latitude: destination.pois[0].locationA, longitude: destination.pois[0].locationF }, zoom: 5 };
+        $scope.polylines = [
+            {
+                path: get_paths(destination.pois),
+                stroke: {
+                    color: '#6060FB',
+                    weight: 3
+                },
+                editable: true,
+                draggable: true,
+                geodesic: true,
+                visible: true,
+            },
+        ];
+    }
 
     function get_paths(destinations){
       //TODO hacer un service para no duplicar este metodo
@@ -324,7 +338,6 @@ function($scope, $modal, destinations, destination){
     };
 
     $scope.addPOI = function () {
-      console.log($scope);
       if($scope.poi === '' || $scope.poi == undefined) { return; }
       destinations.addPOI($scope.destination._id, {
         name: $scope.details.name,
@@ -334,7 +347,6 @@ function($scope, $modal, destinations, destination){
         locationF: $scope.details.geometry.location.F,
       }).success(function(poi) {
         $scope.destination.pois.push(poi);
-        initMap();
       });
       $scope.name = '';
     };
@@ -342,6 +354,47 @@ function($scope, $modal, destinations, destination){
     $scope.deletePOI = function(poi){
       $scope.open_confirmation(poi, $scope.destination);
     }
+
+
+    $scope.addLodging = function () {
+      if($scope.lodging === '' || $scope.lodging == undefined) { return; }
+      destinations.addLodging($scope.destination._id, {
+        name: $scope.details.name,
+        address: $scope.details.formatted_address,
+        phone: $scope.details.formatted_phone_number,
+        icon: $scope.details.icon,
+        locationA: $scope.details.geometry.location.A,
+        locationF: $scope.details.geometry.location.F,
+      }).success(function(lodging) {
+        $scope.destination.lodging = lodging;
+      });
+      $scope.name = '';
+    };
+
+    $scope.deleteLodging = function(lodging){
+      $scope.delete_lodging_confirmation(lodging, $scope.destination);
+    }
+
+        $scope.delete_lodging_confirmation = function (lodging, destination) {
+          console.log(lodging);
+          var modalInstance = $modal.open({
+            templateUrl: 'DeleteLodgingModal.html',
+            controller: 'DeleteLodgingConfirmCtrl',
+            resolve: {
+              lodging: function () {
+                return lodging;
+              },
+              destination: function () {
+                return destination;
+              }
+            }
+          });
+
+          modalInstance.result.then(function (selectedItem) {
+            $scope.selected = selectedItem;
+          }, function () {
+          });
+        };  
 
     $scope.open_confirmation = function (poi, destination) {
 
@@ -362,7 +415,6 @@ function($scope, $modal, destinations, destination){
             $scope.selected = selectedItem;
           }, function () {
           });
-
         };  
 
 }]);
@@ -373,9 +425,9 @@ app.factory('trips', ['$http', 'auth', function($http, auth){
   };
   
   o.create = function(trip) {
-	return $http.post('/trips', trip, {headers: {Authorization: 'Bearer '+auth.getToken()}}).success(function(data){
-	  o.trips.push(data);
-	});
+  return $http.post('/trips', trip, {headers: {Authorization: 'Bearer '+auth.getToken()}}).success(function(data){
+    o.trips.push(data);
+  });
   };
   
   o.getAll = function() {
@@ -385,7 +437,7 @@ app.factory('trips', ['$http', 'auth', function($http, auth){
   };
   
   o.delete = function(id) {
-	return $http.post('/trips/delete/' + id, {headers: {Authorization: 'Bearer '+auth.getToken()}}).then(function(res){
+  return $http.post('/trips/delete/' + id, {headers: {Authorization: 'Bearer '+auth.getToken()}}).then(function(res){
     var index, trip, _i, _len;
     // Borro el trip de la lista de trips
     for (_i = 0, _len = o.trips.length; _i < _len; _i++) {
@@ -395,8 +447,8 @@ app.factory('trips', ['$http', 'auth', function($http, auth){
        o.trips.splice(index, 1);
       }
     };
-	  return res.data;
-	})};
+    return res.data;
+  })};
 
   o.deleteDestination = function(id) {
     return $http.post('/destinations/delete/' + id, {headers: {Authorization: 'Bearer '+auth.getToken()}})};
@@ -438,6 +490,13 @@ app.factory('destinations', ['$http', 'auth', function($http, auth){
 
   o.deletePOI = function(id) {
     return $http.post('/pois/delete/' + id, {headers: {Authorization: 'Bearer '+auth.getToken()}})};
+
+  o.addLodging = function(id, lodging) {
+    return $http.post('/destinations/' + id + '/lodging', lodging);
+  };
+
+  o.deleteLodging = function(id) {
+    return $http.post('/lodging/delete/' + id, {headers: {Authorization: 'Bearer '+auth.getToken()}})};
 
   return o;
 }]);
@@ -481,6 +540,20 @@ app.controller('DeletePOIConfirmCtrl', function ($scope, $modalInstance, destina
     destinations.deletePOI(poi._id);
     var index = destination.pois.indexOf(poi);
     destination.pois.splice(index, 1);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+});
+
+app.controller('DeleteLodgingConfirmCtrl', function ($scope, $modalInstance, destinations, lodging, destination) {
+
+  $scope.lodging = lodging;
+
+  $scope.ok = function () {
+    $modalInstance.close(); 
+    destinations.deleteLodging(lodging._id);
   };
 
   $scope.cancel = function () {

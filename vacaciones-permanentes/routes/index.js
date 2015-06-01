@@ -18,6 +18,7 @@ var User = mongoose.model('User');
 var Trip = mongoose.model('Trip');
 var Destination = mongoose.model('Destination');
 var POI = mongoose.model('POI');
+var Lodging = mongoose.model('Lodging')
 
 router.get('/trips', auth, function(req, res, next) {
   Trip.find({user: req.payload}).exec(function(err, trips){
@@ -78,9 +79,37 @@ router.param('destination', function(req, res, next, id) {
 });
 
 router.get('/destinations/:destination', function(req, res, next) {
-  req.destination.populate('pois', function(err, destination) {
+  req.destination.populate(['pois', 'lodging'], function(err, destination) {
     if (err) { return next(err); }
     res.json(destination);
+  });
+});
+
+router.get('/destinations/:destination/lodging', function(req, res, next) {
+  req.destination.populate('lodging', function(err, destination) {
+    if (err) { return next(err); }
+    res.json(destination);
+  });
+});
+
+
+
+router.param('lodging', function(req, res, next, id) {
+  var query = Lodging.findById(id);
+
+  query.exec(function (err, trip){
+    if (err) { return next(err); }
+    if (!lodging) { return next(new Error('can\'t find lodging')); }
+
+    req.trip = trip;
+    return next();
+  });
+});
+
+router.get('/lodgings', function(req, res, next) {
+  Lodging.find(function(err, lodgings){
+    if(err){ return next(err); }
+    res.json(lodgings);
   });
 });
 
@@ -97,6 +126,22 @@ router.post('/destinations/:destination/poi', function(req, res, next){
       if(err){ return next(err); }
 
       res.json(poi);
+    });
+  });
+});
+
+router.post('/destinations/:destination/lodging', function(req, res, next){
+  var lodging = new Lodging(req.body);
+
+
+  lodging.save(function(err, lodging){
+    if(err){ return next(err); }
+
+    req.destination.lodging = lodging;
+    req.destination.save(function(err, destination) {
+      if(err){ return next(err); }
+
+      res.json(lodging);
     });
   });
 });
@@ -134,6 +179,29 @@ router.post('/pois/delete/:id', function(req, res){
     res.send('/ DELETE OK');
 });
 
+router.post('/pois/delete/:id', function(req, res){
+     POI.findById( req.params.id, function ( err, poi ){
+         poi.remove( function ( err, poi ){
+         });
+     });
+    res.send('/ DELETE OK');
+});
+
+router.post('/lodging/delete/:id', function(req, res){
+     Lodging.findById( req.params.id, function ( err, lodging ){
+         lodging.remove( function ( err, lodging ){
+         });
+     });
+    res.send('/ DELETE OK');
+});
+
+router.post('/lodging/delete/:id', function(req, res){
+     Lodging.findById( req.params.id, function ( err, lodging ){
+         lodging.remove( function ( err, lodging ){
+         });
+     });
+    res.send('/ DELETE OK');
+});
 
 router.post('/register', function(req, res, next){
   if(!req.body.username || !req.body.password){
