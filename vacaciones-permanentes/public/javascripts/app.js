@@ -293,11 +293,14 @@ function($scope, $modal, destinations, destination){
     var NE = new google.maps.LatLng($scope.destination.zaJ, $scope.destination.qaA);
     var bounds = new google.maps.LatLngBounds(SW, NE);
     $scope.options.bounds = bounds;
-    if(destination.pois.length > 0){
-        $scope.map = { center: { latitude: destination.pois[0].locationA, longitude: destination.pois[0].locationF }, zoom: 5 };
+    initMap();
+    
+    function initMap(){
+      if($scope.destination.pois.length > 0){
+        $scope.map = { center: { latitude: $scope.destination.pois[0].locationA, longitude: $scope.destination.pois[0].locationF }, zoom: 5 };
         $scope.polylines = [
             {
-                path: get_paths(destination.pois),
+                path: get_paths($scope.destination.pois),
                 stroke: {
                     color: '#6060FB',
                     weight: 3
@@ -309,6 +312,7 @@ function($scope, $modal, destinations, destination){
             },
         ];
     }
+    };
 
     function get_paths(destinations){
       //TODO hacer un service para no duplicar este metodo
@@ -320,6 +324,7 @@ function($scope, $modal, destinations, destination){
     };
 
     $scope.addPOI = function () {
+      console.log($scope);
       if($scope.poi === '' || $scope.poi == undefined) { return; }
       destinations.addPOI($scope.destination._id, {
         name: $scope.details.name,
@@ -329,6 +334,7 @@ function($scope, $modal, destinations, destination){
         locationF: $scope.details.geometry.location.F,
       }).success(function(poi) {
         $scope.destination.pois.push(poi);
+        initMap();
       });
       $scope.name = '';
     };
@@ -356,6 +362,7 @@ function($scope, $modal, destinations, destination){
             $scope.selected = selectedItem;
           }, function () {
           });
+
         };  
 
 }]);

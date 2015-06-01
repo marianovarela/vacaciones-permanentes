@@ -245,7 +245,7 @@
       details="details" 
       options="options" >
     </div>
-    <button type="submit" class="btn btn-primary">Add</button>
+    <button type="submit" class="btn btn-primary" ng-click="map.refresh()">Add</button>
   </form> 
   <div id="google_map">
   <ui-gmap-google-map center='map.center' zoom='map.zoom'>
@@ -279,10 +279,6 @@
         <button type="submit" class="btn btn-primary">Register</button>
     </form>
     <div id="google_map">
-  <ui-gmap-google-map center='map.center' zoom='map.zoom'>
-  <!--<ui-gmap-polyline ng-repeat="p in points" path="p.path" stroke="p.stroke" visible='p.visible'
-                  geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'></ui-gmap-polyline>                 
-  </ui-gmap-google-map>
 </script>
 <script type="text/ng-template" id="/login.html">
     <div class="page-header">
