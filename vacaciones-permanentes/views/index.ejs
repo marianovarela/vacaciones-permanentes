@@ -247,7 +247,7 @@
     <button type="submit" class="btn btn-primary" ng-click="map.refresh()">Add</button>
   </form> 
   <div id="google_map">
-  <ui-gmap-google-map center='map.center' zoom='map.zoom'>
+  <ui-gmap-google-map center='lodgingMap.center' zoom='lodgingMap.zoom'>
   <ui-gmap-polyline ng-repeat="p in lodgingPolylines" path="p.path" stroke="p.stroke" visible='p.visible'
                   geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'></ui-gmap-polyline>
   </ui-gmap-google-map>

@@ -296,7 +296,7 @@ function($scope, $modal, destinations, destination){
     $scope.lodgingOptions = {}
 
     if(destination.lodging){
-        $scope.lodgingMap = { center: { latitude: destination.lodging.locationA, longitude: destination.lodging.locationF }, zoom: 5 };
+        $scope.lodgingMap = { center: { latitude: destination.lodging.locationA, longitude: destination.lodging.locationF }, zoom: 10 };
         $scope.lodgingPolylines = [
             {
                 path: [{'latitude':destination.lodging.locationA,'longitude':destination.lodging.locationF}],
@@ -311,22 +311,26 @@ function($scope, $modal, destinations, destination){
             },
         ];
     }
-    if(destination.pois.length > 0){
-        $scope.map = { center: { latitude: destination.pois[0].locationA, longitude: destination.pois[0].locationF }, zoom: 5 };
-        $scope.polylines = [
-            {
-                path: get_paths(destination.pois),
-                stroke: {
-                    color: '#6060FB',
-                    weight: 3
-                },
-                editable: true,
-                draggable: true,
-                geodesic: true,
-                visible: true,
-            },
-        ];
-    }
+    initMap();
+    
+    function initMap(){
+      if(destination.pois.length > 0){
+          $scope.map = { center: { latitude: destination.pois[0].locationA, longitude: destination.pois[0].locationF }, zoom: 5 };
+          $scope.polylines = [
+              {
+                  path: get_paths(destination.pois),
+                  stroke: {
+                      color: '#6060FB',
+                      weight: 3
+                  },
+                  editable: true,
+                  draggable: true,
+                  geodesic: true,
+                  visible: true,
+              },
+          ];
+      }
+  }
 
     function get_paths(destinations){
       //TODO hacer un service para no duplicar este metodo
@@ -554,6 +558,7 @@ app.controller('DeleteLodgingConfirmCtrl', function ($scope, $modalInstance, des
   $scope.ok = function () {
     $modalInstance.close(); 
     destinations.deleteLodging(lodging._id);
+    destination.lodging = null;
   };
 
   $scope.cancel = function () {
