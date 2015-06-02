@@ -9,6 +9,8 @@ var LodgingSchema = new mongoose.Schema({
   locationF: Number,
   check_in: Date, 
   check_out: Date, 
+  rating: Number,
+  comment: String,
 });
 
 mongoose.model('Lodging', LodgingSchema);

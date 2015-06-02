@@ -215,11 +215,14 @@
   <th>POI</th>
   <th>Address</th>
   <th>Phone</th>
+  <th>Rating(1-5)</th>
+  <th></th>  
   </thead>
   <tbody>
         <td>{{destination.lodging.name}}</td>
         <td>{{destination.lodging.address}}</td>
         <td>{{destination.lodging.phone}}</td>
+        <td>{{destination.lodging.rating}}</td>
         <td>
         <button ng-click="deleteLodging(destination.lodging)">
               <span class="glyphicon glyphicon-remove-circle"</span>
@@ -228,7 +231,14 @@
   </tbody>
   </table>
 
-  <h3 ng-if='destination.lodging'> No lodging selected </h3>  
+  <table class="table" ng-show="destination.lodging.comment">
+  <thead>
+  <th>Comment</th> 
+  </thead>
+  <tbody>
+        <td>{{destination.lodging.comment}}</td>
+  </tbody>
+  </table>
 
   <h1> Add new lodging to {{destination.name}}</h1>
     <form ng-submit="addLodging()"

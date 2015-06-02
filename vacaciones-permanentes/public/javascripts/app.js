@@ -361,6 +361,7 @@ function($scope, $modal, destinations, destination){
 
 
     $scope.addLodging = function () {
+      console.log($scope.details);
       if($scope.lodging === '' || $scope.lodging == undefined) { return; }
       destinations.addLodging($scope.destination._id, {
         name: $scope.details.name,
@@ -369,6 +370,8 @@ function($scope, $modal, destinations, destination){
         icon: $scope.details.icon,
         locationA: $scope.details.geometry.location.A,
         locationF: $scope.details.geometry.location.F,
+        rating: $scope.details.rating,
+        comment: $scope.details.reviews[0].text,
       }).success(function(lodging) {
         $scope.destination.lodging = lodging;
       });
