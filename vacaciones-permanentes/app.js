@@ -11,6 +11,7 @@ require('./models/Users');
 require('./models/Trip');
 require('./models/Destination');
 require('./models/POI');
+require('./models/Lodging');
 require('./config/passport');
 mongoose.connect('mongodb://localhost/news');
 var routes = require('./routes/index');

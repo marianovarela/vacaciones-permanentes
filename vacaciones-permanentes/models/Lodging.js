@@ -1,8 +1,12 @@
 var mongoose = require('mongoose');
 
 var LodgingSchema = new mongoose.Schema({
-  name: String, //Si es Hotel, Hostel, etc
-  coordinates: String, // Las coordenadas
+  address: String,
+  icon: String,
+  name: String,
+  phone: String,
+  locationA: Number,
+  locationF: Number,
   check_in: Date, 
   check_out: Date, 
 });
