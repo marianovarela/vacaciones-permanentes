@@ -29,11 +29,9 @@ module.exports = function(grunt) {
 
     karma: {
       unit: {
-        options: {
-          files: ['test/**/*.js']
-        }
+        configFile: 'karma.conf.js'
       }
-    }
+    },
 
   });
 
@@ -41,4 +39,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-karma');
   grunt.registerTask('default', 'jshint');
+  grunt.registerTask('test', ['karma']);
 };
