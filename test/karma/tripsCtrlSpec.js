@@ -14,19 +14,6 @@ describe('Main Controller', function() {
 }));
 
     it('should clean scope after add ', inject(function ($controller) {
-      expect(true).toBe(true);
+      expect(true).toBe(false);
     }));
-
-    it('should clean scope after add 2', inject(function ($controller) {
-      expect(true).toBe(true);
-    }));
-
-    it('should clean scope after add 3', inject(function ($controller) {
-      expect(true).toBe(true);
-    }));
-
-    it('should clean scope after add 4', inject(function ($controller) {
-      expect(true).toBe(true);
-    }));
-
 })
