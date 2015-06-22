@@ -26,5 +26,8 @@
     "angular-google-maps": "~2.1.0",
     "ng-autocomplete": "*",
     "ngAutocomplete": "~1.0.0"
-  }
+  },
+  "resolutions": {
+  "angular": "1.4.0"
+}
 }
