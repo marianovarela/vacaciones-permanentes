@@ -15,8 +15,8 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'public/javascripts/lib/jquery/dist/jquery.js',
-      'public/javascripts/lib/angular/angular.js',
+      'bower_components/jquery/dist/jquery.js',
+      'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angular-google-maps/dist/angular-google-maps.js',
       'bower_components/angular-google-places-autocomplete/dist/autocomplete.min.js',

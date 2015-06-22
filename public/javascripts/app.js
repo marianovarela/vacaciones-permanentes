@@ -568,6 +568,8 @@ app.controller('DeleteLodgingConfirmCtrl', function ($scope, $modalInstance, des
 });
 
 app.factory('trip', function() {
-
-  var destinations = [];
+  var o = {
+    destinations: []
+  };
+  return o;
 })
