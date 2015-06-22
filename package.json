@@ -33,6 +33,7 @@
     "grunt-wiredep": "~2.0.0",
     "jshint": "^2.8.0",
     "karma-chrome-launcher": "^0.1.12",
+    "karma-firefox-launcher": "^0.1.6",
     "karma-jasmine": "^0.3.5"
   }
 }
