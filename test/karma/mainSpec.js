@@ -20,7 +20,6 @@ describe('Main Ctrl', function () {
 
   describe('MainCtrl', function () {
 
-
     it('should clean scope after add ', inject(function ($controller) {
       var $scope = {'trip':tripMockeado};
       $controller('MainCtrl', { $scope: $scope }); 
@@ -28,6 +27,5 @@ describe('Main Ctrl', function () {
       $scope.addTrip();
       expect($scope.trip.name).toBe('');
     }));
-
   });
 });
