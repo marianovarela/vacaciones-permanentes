@@ -151,15 +151,13 @@ function($scope, trips, $modal){
   $scope.trips = trips.trips;
   
   $scope.addTrip = function(){
-    console.log($scope.trip);
     if(!$scope.trip.name || $scope.trip.name === '') { return; }
     trips.create({
       name: $scope.trip.name,
       start: $scope.trip.start,
       end: $scope.trip.end,
-
     }).success(function(trip) {
-      // $scope.trips.push(trip);
+      $scope.trips.push(trip);
     });
     $scope.trip.name = '';
   };
@@ -568,3 +566,10 @@ app.controller('DeleteLodgingConfirmCtrl', function ($scope, $modalInstance, des
     $modalInstance.dismiss('cancel');
   };
 });
+
+app.factory('trip', function() {
+  var o = {
+    destinations: []
+  };
+  return o;
+})

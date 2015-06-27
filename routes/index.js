@@ -18,7 +18,7 @@ var User = mongoose.model('User');
 var Trip = mongoose.model('Trip');
 var Destination = mongoose.model('Destination');
 var POI = mongoose.model('POI');
-var Lodging = mongoose.model('Lodging')
+var Lodging = mongoose.model('Lodging');
 
 router.get('/trips', auth, function(req, res, next) {
   Trip.find({user: req.payload}).exec(function(err, trips){
@@ -217,7 +217,7 @@ router.post('/register', function(req, res, next){
   user.save(function (err){
     if(err){ return next(err); }
 
-    return res.json({token: user.generateJWT()})
+    return res.json({token: user.generateJWT()});
   });
 });
 router.post('/login', function(req, res, next){

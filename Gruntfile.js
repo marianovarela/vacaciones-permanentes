@@ -8,11 +8,11 @@ module.exports = function(grunt) {
       js: ['concat:js']
     },
 
-    compile: {
-      css: ['jade', 'wiredep'],
-      styles: ['concat:styles', 'sass', 'clean:compile'],
-      js: ['concat:js']
-    },
+    // compile: {
+    //   css: ['jade', 'wiredep'],
+    //   styles: ['concat:styles', 'sass', 'clean:compile'],
+    //   js: ['concat:js']
+    // },
 
     wiredep: {
       task: {
@@ -21,9 +21,23 @@ module.exports = function(grunt) {
       options : {
        ignorePath : "../public" 
       }
-    }
+    },
+
+    jshint: {
+      all: ['Gruntfile.js', 'hello.js', 'app.js', 'models/*.js', 'routes/*.js']
+    },
+
+    karma: {
+      unit: {
+        configFile: 'karma2.conf.js'
+      }
+    },
 
   });
 
   grunt.loadNpmTasks('grunt-wiredep');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-karma');
+  grunt.registerTask('default', 'jshint');
+  grunt.registerTask('test', ['karma']);
 };
