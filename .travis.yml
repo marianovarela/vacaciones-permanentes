@@ -14,5 +14,5 @@ deploy:
   user: marianogvarela@gmail.com
   password: unqunq
   domain: vymaster
-  app: vacaciones-permanentes 
+  app: vacacionespermanentes 
 after_deploy: "echo 'termino el deploy'"    
