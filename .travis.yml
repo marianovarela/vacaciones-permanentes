@@ -8,3 +8,10 @@ before_script:
   - npm install -g grunt-cli  
   - npm install -g bower
   - bower install
+before_deploy: "echo 'empieza el deploy'"  
+deploy:
+  provider: openshift
+  user: marianogvarela@gmail.com
+  password: unqunq
+  domain: vymaster
+after_deploy: "echo 'termino el deploy'"    
