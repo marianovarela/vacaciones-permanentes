@@ -13,7 +13,8 @@ require('./models/Destination');
 require('./models/POI');
 require('./models/Lodging');
 require('./config/passport');
-mongoose.connect('mongodb://localhost/news');
+var connectionString = process.env.MONGOLAB_URI
+mongoose.connect(connectionString || 'mongodb://localhost/news');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
