@@ -10,9 +10,7 @@ before_script:
   - bower install
 before_deploy: "echo 'empieza el deploy'"  
 deploy:
-  provider: openshift
-  user: marianogvarela@gmail.com
-  password: unqunq
-  domain: vymaster
-  app: vacaciones-permanentes  
+  provider: heroku
+  app: vacacionespermanentesvy
+  api_key: ffac8c94-3488-4db2-8302-b14e7b731efd
 after_deploy: "echo 'termino el deploy'"    
