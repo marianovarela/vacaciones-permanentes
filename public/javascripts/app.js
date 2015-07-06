@@ -229,17 +229,17 @@ function get_paths(destinations){
 
 $scope.addDestination = function(){
   console.log($scope.city);
-  console.log($scope.details);
+  console.log($scope.details.geometry);
   if($scope.name === '') { return; }
-  trips.addDestination(trip._id, {
+  trips.addDestination(trip._id, {    
     name: $scope.details.formatted_address,
     icon: $scope.details.icon,
     locationA: $scope.details.geometry.location.A,
     locationF: $scope.details.geometry.location.F,
     zaA: $scope.details.geometry.viewport.za.A,
     zaJ: $scope.details.geometry.viewport.za.j,
-    qaA: $scope.details.geometry.viewport.qa.A,
-    qaJ: $scope.details.geometry.viewport.qa.j,
+    qaA: $scope.details.geometry.viewport.ra.A,
+    qaJ: $scope.details.geometry.viewport.ra.j,
     arrival: $scope.city.arrival,
     departure: $scope.city.departure,
 
